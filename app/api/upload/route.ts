@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
-    const storeInDB = formData.get("storeInDB") === "true"; // Optional flag
 
     if (!file) {
       return NextResponse.json(
@@ -41,26 +37,16 @@ export async function POST(request: Request) {
     const base64Data = buffer.toString("base64");
     const base64String = `data:${file.type};base64,${base64Data}`;
 
-    // Also save to file system for direct access
-    const uploadsDir = join(process.cwd(), "public", "uploads");
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
-    // Generate unique filename
+    // Generate unique filename for reference
     const timestamp = Date.now();
     const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const filename = `${timestamp}_${originalName}`;
-    const filepath = join(uploadsDir, filename);
 
-    // Save file to filesystem
-    await writeFile(filepath, buffer);
-
-    // Return both URL and base64 data
-    const url = `/uploads/${filename}`;
-
+    // In serverless environments (Vercel), filesystem is read-only
+    // So we only store in database, not on filesystem
+    // Return base64 data which will be stored in MongoDB
     return NextResponse.json({
-      url,
+      url: base64String, // Use base64 as URL for database storage
       filename,
       base64Data: base64String,
       mimeType: file.type,

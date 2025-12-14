@@ -16,21 +16,22 @@ export async function GET(request: Request) {
     const galleryItems = await Gallery.find(query).sort({ createdAt: -1 });
 
     const formattedItems = galleryItems.map((item: any) => {
-      // If image data is stored in DB, use it; otherwise use URL
-      const imageUrl = item.imageData 
-        ? item.imageData // Base64 data URL
-        : (item.thumbnail || item.url);
+      // If image data is stored in DB (base64), use it; otherwise use URL
+      // Base64 data URLs start with "data:image/"
+      const isBase64 = item.url?.startsWith("data:image/") || item.imageData;
+      const imageUrl = item.imageData || item.url;
+      const thumbnailUrl = item.thumbnail || imageUrl;
       
       return {
         id: item._id.toString(),
         title: item.title,
         type: item.type,
-        url: item.imageData || item.url, // Use base64 if available, otherwise URL
-        thumbnail: imageUrl,
+        url: imageUrl, // Base64 data URL or regular URL
+        thumbnail: thumbnailUrl,
         category: item.category,
         country: item.country,
         youtubeId: item.youtubeId,
-        hasImageData: !!item.imageData, // Flag to indicate if image is stored in DB
+        hasImageData: !!item.imageData || isBase64, // Flag to indicate if image is stored in DB
       };
     });
 

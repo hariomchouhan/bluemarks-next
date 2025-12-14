@@ -76,23 +76,27 @@ export default function AdminGalleryPage() {
     if (formData.type === "video") {
       submitData.youtubeUrl = formData.youtubeUrl;
     } else {
-      // Use uploaded image URL if available, otherwise use entered URL
-      submitData.url = uploadedImage || formData.url;
-      if (!submitData.url) {
-        alert("Please upload an image or enter an image URL");
-        return;
-      }
-      
-      // If image was uploaded, include base64 data for database storage
+      // If image was uploaded, use base64 data; otherwise use entered URL
       if (imageData) {
+        // Image uploaded - store base64 in database
+        submitData.url = imageData.base64; // Store base64 as URL
         submitData.imageData = imageData.base64;
         submitData.imageMimeType = imageData.mimeType;
         submitData.fileName = imageData.fileName;
         submitData.fileSize = imageData.fileSize;
+      } else if (formData.url) {
+        // URL entered manually
+        submitData.url = formData.url;
+      } else {
+        alert("Please upload an image or enter an image URL");
+        return;
       }
       
       if (formData.thumbnail) {
         submitData.thumbnail = formData.thumbnail;
+      } else if (imageData) {
+        // Use base64 as thumbnail if no thumbnail provided
+        submitData.thumbnail = imageData.base64;
       }
     }
 
@@ -161,7 +165,6 @@ export default function AdminGalleryPage() {
       const data = await res.json();
       // Clear the URL input when uploading a file
       setFormData({ ...formData, url: "" });
-      setUploadedImage(data.url);
       
       // Store image data for database
       setImageData({
@@ -171,12 +174,9 @@ export default function AdminGalleryPage() {
         fileSize: data.fileSize,
       });
       
-      // Create preview from uploaded file
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      // Use base64 data for preview and as the URL
+      setUploadedImage(data.base64Data);
+      setImagePreview(data.base64Data);
     } catch (error: any) {
       console.error("Error uploading file:", error);
       alert(error.message || "Error uploading file. Please try again.");
