@@ -39,6 +39,12 @@ export async function POST(request: Request) {
       }
     }
 
+    // For photos, store image data in database if provided
+    if (body.type === "photo" && body.imageData) {
+      // imageData, imageMimeType, fileName, fileSize are already in body
+      // They will be saved to MongoDB
+    }
+
     const galleryItem = new Gallery(body);
     await galleryItem.save();
     return NextResponse.json(galleryItem, { status: 201 });

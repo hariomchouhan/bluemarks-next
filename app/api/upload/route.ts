@@ -7,6 +7,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
+    const storeInDB = formData.get("storeInDB") === "true"; // Optional flag
 
     if (!file) {
       return NextResponse.json(
@@ -36,7 +37,11 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create uploads directory if it doesn't exist
+    // Convert to base64 for database storage
+    const base64Data = buffer.toString("base64");
+    const base64String = `data:${file.type};base64,${base64Data}`;
+
+    // Also save to file system for direct access
     const uploadsDir = join(process.cwd(), "public", "uploads");
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true });
@@ -48,13 +53,20 @@ export async function POST(request: Request) {
     const filename = `${timestamp}_${originalName}`;
     const filepath = join(uploadsDir, filename);
 
-    // Save file
+    // Save file to filesystem
     await writeFile(filepath, buffer);
 
-    // Return the URL
+    // Return both URL and base64 data
     const url = `/uploads/${filename}`;
 
-    return NextResponse.json({ url, filename });
+    return NextResponse.json({
+      url,
+      filename,
+      base64Data: base64String,
+      mimeType: file.type,
+      fileName: file.name,
+      fileSize: file.size,
+    });
   } catch (error: any) {
     console.error("Error uploading file:", error);
     return NextResponse.json(
@@ -63,4 +75,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

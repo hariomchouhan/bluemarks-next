@@ -13,6 +13,10 @@ interface GalleryItem {
   category: string;
   country: string;
   youtubeId?: string;
+  imageData?: string; // Base64 encoded image data
+  imageMimeType?: string;
+  fileName?: string;
+  fileSize?: number;
 }
 
 export default function AdminGalleryPage() {
@@ -32,6 +36,12 @@ export default function AdminGalleryPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageData, setImageData] = useState<{
+    base64: string;
+    mimeType: string;
+    fileName: string;
+    fileSize: number;
+  } | null>(null);
 
   useEffect(() => {
     fetchGallery();
@@ -72,6 +82,15 @@ export default function AdminGalleryPage() {
         alert("Please upload an image or enter an image URL");
         return;
       }
+      
+      // If image was uploaded, include base64 data for database storage
+      if (imageData) {
+        submitData.imageData = imageData.base64;
+        submitData.imageMimeType = imageData.mimeType;
+        submitData.fileName = imageData.fileName;
+        submitData.fileSize = imageData.fileSize;
+      }
+      
       if (formData.thumbnail) {
         submitData.thumbnail = formData.thumbnail;
       }
@@ -98,6 +117,7 @@ export default function AdminGalleryPage() {
         });
         setUploadedImage(null);
         setImagePreview(null);
+        setImageData(null);
         fetchGallery();
       }
     } catch (error) {
@@ -143,6 +163,14 @@ export default function AdminGalleryPage() {
       setFormData({ ...formData, url: "" });
       setUploadedImage(data.url);
       
+      // Store image data for database
+      setImageData({
+        base64: data.base64Data,
+        mimeType: data.mimeType,
+        fileName: data.fileName,
+        fileSize: data.fileSize,
+      });
+      
       // Create preview from uploaded file
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -170,8 +198,24 @@ export default function AdminGalleryPage() {
         ? `https://www.youtube.com/watch?v=${item.youtubeId}`
         : "",
     });
-    setUploadedImage(item.url);
-    setImagePreview(item.url);
+    
+    // Check if image is stored in DB (base64) or as URL
+    const imageUrl = item.imageData || item.url;
+    setUploadedImage(imageUrl);
+    setImagePreview(imageUrl);
+    
+    // If image data exists in DB, set it
+    if (item.imageData) {
+      setImageData({
+        base64: item.imageData,
+        mimeType: item.imageMimeType || "image/jpeg",
+        fileName: item.fileName || "image.jpg",
+        fileSize: item.fileSize || 0,
+      });
+    } else {
+      setImageData(null);
+    }
+    
     setShowForm(true);
   };
 
@@ -233,6 +277,7 @@ export default function AdminGalleryPage() {
                 });
                 setUploadedImage(null);
                 setImagePreview(null);
+                setImageData(null);
               }}
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
             >
@@ -382,6 +427,7 @@ export default function AdminGalleryPage() {
                               onClick={() => {
                                 setImagePreview(null);
                                 setUploadedImage(null);
+                                setImageData(null);
                                 setFormData({ ...formData, url: "" });
                                 // Reset file input
                                 const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;

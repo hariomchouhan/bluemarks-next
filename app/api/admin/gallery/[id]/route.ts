@@ -43,6 +43,12 @@ export async function PUT(
       }
     }
 
+    // For photos, store image data in database if provided
+    if (body.type === "photo" && body.imageData) {
+      // imageData, imageMimeType, fileName, fileSize are already in body
+      // They will be saved to MongoDB
+    }
+
     const galleryItem = await Gallery.findByIdAndUpdate(params.id, body, {
       new: true,
       runValidators: true,

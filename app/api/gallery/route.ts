@@ -15,16 +15,24 @@ export async function GET(request: Request) {
 
     const galleryItems = await Gallery.find(query).sort({ createdAt: -1 });
 
-    const formattedItems = galleryItems.map((item: any) => ({
-      id: item._id.toString(),
-      title: item.title,
-      type: item.type,
-      url: item.url,
-      thumbnail: item.thumbnail || item.url,
-      category: item.category,
-      country: item.country,
-      youtubeId: item.youtubeId,
-    }));
+    const formattedItems = galleryItems.map((item: any) => {
+      // If image data is stored in DB, use it; otherwise use URL
+      const imageUrl = item.imageData 
+        ? item.imageData // Base64 data URL
+        : (item.thumbnail || item.url);
+      
+      return {
+        id: item._id.toString(),
+        title: item.title,
+        type: item.type,
+        url: item.imageData || item.url, // Use base64 if available, otherwise URL
+        thumbnail: imageUrl,
+        category: item.category,
+        country: item.country,
+        youtubeId: item.youtubeId,
+        hasImageData: !!item.imageData, // Flag to indicate if image is stored in DB
+      };
+    });
 
     return NextResponse.json(formattedItems);
   } catch (error) {
