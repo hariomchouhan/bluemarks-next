@@ -25,6 +25,7 @@ export default function GalleryPage() {
       const videosData = await videosRes.json();
       setPhotos(photosData);
       setVideos(videosData);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching gallery:", error);
     } finally {
