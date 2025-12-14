@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    @apply bg-gradient-to-r from-blue-800 via-blue-400 to-indigo-800;
+  }
+  
+  .gradient-secondary {
+    @apply bg-gradient-to-r from-cyan-800 via-blue-400 to-indigo-800;
+  }
+  
+  .gradient-accent {
+    @apply bg-gradient-to-br from-blue-800 via-blue-400 to-indigo-800;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-800 via-blue-400 to-indigo-800;
+  }
+}
+
+/* Rich Text Content Styling */
+.rich-content {
+  @apply text-gray-700 leading-relaxed;
+}
+
+.rich-content h1,
+.rich-content h2,
+.rich-content h3,
+.rich-content h4,
+.rich-content h5,
+.rich-content h6 {
+  @apply font-bold text-gray-900 mt-8 mb-4;
+}
+
+.rich-content h1 {
+  @apply text-4xl;
+}
+
+.rich-content h2 {
+  @apply text-3xl;
+}
+
+.rich-content h3 {
+  @apply text-2xl;
+}
+
+.rich-content h4 {
+  @apply text-xl;
+}
+
+.rich-content p {
+  @apply mb-4;
+}
+
+.rich-content ul,
+.rich-content ol {
+  @apply mb-4 ml-6;
+}
+
+.rich-content ul {
+  @apply list-disc;
+}
+
+.rich-content ol {
+  @apply list-decimal;
+}
+
+.rich-content li {
+  @apply mb-2;
+}
+
+.rich-content a {
+  @apply text-blue-600 hover:text-blue-800 underline;
+}
+
+.rich-content img {
+  @apply max-w-full h-auto rounded-lg my-6;
+}
+
+.rich-content blockquote {
+  @apply border-l-4 border-blue-600 pl-4 italic my-4 text-gray-600;
+}
+
+.rich-content table {
+  @apply w-full border-collapse my-6;
+}
+
+.rich-content th,
+.rich-content td {
+  @apply border border-gray-300 px-4 py-2;
+}
+
+.rich-content th {
+  @apply bg-gray-100 font-semibold;
+}
+
+.rich-content code {
+  @apply bg-gray-100 px-2 py-1 rounded text-sm font-mono;
+}
+
+.rich-content pre {
+  @apply bg-gray-100 p-4 rounded-lg overflow-x-auto my-4;
+}
+
+.rich-content pre code {
+  @apply bg-transparent p-0;
+}
