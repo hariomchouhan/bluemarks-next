@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Plus, Edit, Trash2, Image, Video } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Image, Video, Upload, X } from "lucide-react";
 
 interface GalleryItem {
   _id: string;
@@ -29,6 +29,9 @@ export default function AdminGalleryPage() {
     country: "",
     youtubeUrl: "",
   });
+  const [uploading, setUploading] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetchGallery();
@@ -63,7 +66,12 @@ export default function AdminGalleryPage() {
     if (formData.type === "video") {
       submitData.youtubeUrl = formData.youtubeUrl;
     } else {
-      submitData.url = formData.url;
+      // Use uploaded image URL if available, otherwise use entered URL
+      submitData.url = uploadedImage || formData.url;
+      if (!submitData.url) {
+        alert("Please upload an image or enter an image URL");
+        return;
+      }
       if (formData.thumbnail) {
         submitData.thumbnail = formData.thumbnail;
       }
@@ -88,11 +96,64 @@ export default function AdminGalleryPage() {
           country: "",
           youtubeUrl: "",
         });
+        setUploadedImage(null);
+        setImagePreview(null);
         fetchGallery();
       }
     } catch (error) {
       console.error("Error saving gallery item:", error);
       alert("Error saving gallery item. Please try again.");
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file (PNG, JPG, GIF, or WEBP)");
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File size must be less than 10MB");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Upload failed");
+      }
+
+      const data = await res.json();
+      // Clear the URL input when uploading a file
+      setFormData({ ...formData, url: "" });
+      setUploadedImage(data.url);
+      
+      // Create preview from uploaded file
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } catch (error: any) {
+      console.error("Error uploading file:", error);
+      alert(error.message || "Error uploading file. Please try again.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -109,6 +170,8 @@ export default function AdminGalleryPage() {
         ? `https://www.youtube.com/watch?v=${item.youtubeId}`
         : "",
     });
+    setUploadedImage(item.url);
+    setImagePreview(item.url);
     setShowForm(true);
   };
 
@@ -156,7 +219,7 @@ export default function AdminGalleryPage() {
               <h1 className="text-4xl font-bold text-gradient">Manage Gallery</h1>
             </div>
             <button
-              onClick={() => {
+                onClick={() => {
                 setShowForm(true);
                 setEditingItem(null);
                 setFormData({
@@ -168,6 +231,8 @@ export default function AdminGalleryPage() {
                   country: "",
                   youtubeUrl: "",
                 });
+                setUploadedImage(null);
+                setImagePreview(null);
               }}
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
             >
@@ -271,18 +336,101 @@ export default function AdminGalleryPage() {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Image URL *
+                        Upload Image or Enter URL *
                       </label>
+                      
+                      {/* File Upload */}
+                      <div className="mb-4">
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            {uploading ? (
+                              <>
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+                                <p className="text-sm text-gray-500">Uploading...</p>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                                <p className="text-sm text-gray-500">
+                                  <span className="font-semibold">Click to upload</span> or drag and drop
+                                </p>
+                                <p className="text-xs text-gray-500">PNG, JPG, GIF, WEBP (MAX. 10MB)</p>
+                              </>
+                            )}
+                          </div>
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            disabled={uploading}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Image Preview */}
+                      {imagePreview && (
+                        <div className="mb-4 relative">
+                          <div className="relative inline-block">
+                            <img
+                              src={imagePreview}
+                              alt="Preview"
+                              className="max-w-full h-48 object-cover rounded-lg border border-gray-300"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setImagePreview(null);
+                                setUploadedImage(null);
+                                setFormData({ ...formData, url: "" });
+                                // Reset file input
+                                const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                                if (fileInput) fileInput.value = '';
+                              }}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-lg"
+                              title="Remove image"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Or Enter URL */}
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                          <span className="px-2 bg-white text-gray-500">OR</span>
+                        </div>
+                      </div>
+
                       <input
                         type="url"
-                        required
                         value={formData.url}
-                        onChange={(e) =>
-                          setFormData({ ...formData, url: e.target.value })
-                        }
+                        onChange={(e) => {
+                          setFormData({ ...formData, url: e.target.value });
+                          if (e.target.value) {
+                            setImagePreview(e.target.value);
+                            setUploadedImage(null);
+                          } else if (!uploadedImage) {
+                            setImagePreview(null);
+                          }
+                        }}
                         placeholder="https://example.com/image.jpg"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent mt-4"
                       />
+                      {!formData.url && !uploadedImage && (
+                        <p className="mt-2 text-sm text-gray-500">
+                          Please upload an image above or enter an image URL
+                        </p>
+                      )}
+                      {(formData.url || uploadedImage) && (
+                        <p className="mt-2 text-sm text-green-600">
+                          ✓ Image ready
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
