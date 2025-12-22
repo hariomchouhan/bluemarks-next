@@ -136,7 +136,7 @@ export default function UniversityPage() {
       {university.content && (
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto prose prose-lg max-w-none">
+            <div className="w-full mx-auto">
               <div
                 className="rich-content"
                 dangerouslySetInnerHTML={{ __html: university.content }}

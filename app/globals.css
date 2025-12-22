@@ -113,3 +113,47 @@
 .rich-content pre code {
   @apply bg-transparent p-0;
 }
+
+/* Button styling in rich content */
+.rich-content a.button,
+.rich-content button {
+  @apply inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all text-center no-underline;
+  margin: 10px 0;
+  cursor: pointer;
+  border: none;
+}
+
+.rich-content a.button:hover,
+.rich-content button:hover {
+  @apply transform scale-105;
+}
+
+/* YouTube iframe styling - Full width and responsive */
+.rich-content iframe {
+  @apply w-full my-6 rounded-lg;
+  min-height: 400px;
+  aspect-ratio: 16 / 9;
+}
+
+/* Responsive YouTube embeds */
+.rich-content .ql-video,
+.rich-content iframe[src*="youtube.com"],
+.rich-content iframe[src*="youtu.be"] {
+  @apply w-full my-6 rounded-lg;
+  min-height: 400px;
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+}
+
+/* Ensure all iframes are responsive */
+@media (max-width: 768px) {
+  .rich-content iframe {
+    min-height: 250px;
+  }
+  
+  .rich-content .ql-video,
+  .rich-content iframe[src*="youtube.com"],
+  .rich-content iframe[src*="youtu.be"] {
+    min-height: 250px;
+  }
+}
