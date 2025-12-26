@@ -13,7 +13,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Countries Management */}
             <Link
-              href="/admin123/countries"
+              href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/countries`}
               className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2"
             >
               <div className="flex items-center gap-4 mb-4">
@@ -33,7 +33,7 @@ export default function AdminDashboard() {
 
             {/* Universities Management */}
             <Link
-              href="/admin123/universities"
+            href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/universities`}
               className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2"
             >
               <div className="flex items-center gap-4 mb-4">
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
 
             {/* Gallery Management */}
             <Link
-              href="/admin123/gallery"
+            href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/gallery`}
               className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2"
             >
               <div className="flex items-center gap-4 mb-4">
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
 
             {/* Image Upload */}
             <Link
-              href="/admin123/images"
+            href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/images`}
               className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2"
             >
               <div className="flex items-center gap-4 mb-4">

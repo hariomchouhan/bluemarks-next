@@ -48,8 +48,8 @@ export default function AdminUniversitiesPage() {
   const fetchData = async () => {
     try {
       const [universitiesRes, countriesRes] = await Promise.all([
-        fetch("/api/admin/universities"),
-        fetch("/api/admin/countries"),
+        fetch(`/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/universities`),
+        fetch(`/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/countries`),
       ]);
       const universitiesData = await universitiesRes.json();
       const countriesData = await countriesRes.json();
@@ -65,8 +65,8 @@ export default function AdminUniversitiesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingUniversity
-      ? `/api/admin/universities/${editingUniversity._id}`
-      : "/api/admin/universities";
+      ? `/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/universities/${editingUniversity._id}`
+      : `/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/universities`;
     const method = editingUniversity ? "PUT" : "POST";
 
     try {
@@ -103,7 +103,7 @@ export default function AdminUniversitiesPage() {
 
   const handleEdit = (university: University) => {
     setEditingUniversity(university);
-    fetch(`/api/admin/universities/${university._id}`)
+    fetch(`/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/universities/${university._id}`)
       .then((res) => res.json())
       .then((data) => {
         setFormData({
@@ -128,7 +128,7 @@ export default function AdminUniversitiesPage() {
     if (!confirm("Are you sure you want to delete this university?")) return;
 
     try {
-      const res = await fetch(`/api/admin/universities/${id}`, {
+      const res = await fetch(`/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/universities/${id}`, {
         method: "DELETE",
       });
 
@@ -166,7 +166,7 @@ export default function AdminUniversitiesPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <Link
-                href="/admin"
+                href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}`}
                 className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -204,7 +204,7 @@ export default function AdminUniversitiesPage() {
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
               <p className="text-yellow-800">
                 <strong>Note:</strong> You need to create at least one country before adding universities.{" "}
-                <Link href="/admin/countries" className="underline font-semibold">
+                <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/countries`} className="underline font-semibold">
                   Create a country first
                 </Link>
               </p>

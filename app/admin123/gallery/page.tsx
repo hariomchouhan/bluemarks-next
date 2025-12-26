@@ -49,7 +49,7 @@ export default function AdminGalleryPage() {
 
   const fetchGallery = async () => {
     try {
-      const res = await fetch("/api/admin/gallery");
+      const res = await fetch(`/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/gallery`);
       const data = await res.json();
       setGalleryItems(data);
     } catch (error) {
@@ -62,8 +62,8 @@ export default function AdminGalleryPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingItem
-      ? `/api/admin/gallery/${editingItem._id}`
-      : "/api/admin/gallery";
+      ? `/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/gallery/${editingItem._id}`
+      : `/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/gallery`;
     const method = editingItem ? "PUT" : "POST";
 
     const submitData: any = {
@@ -223,7 +223,7 @@ export default function AdminGalleryPage() {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const res = await fetch(`/api/admin/gallery/${id}`, {
+      const res = await fetch(`/api/${process.env.NEXT_PUBLIC_ADMIN_SECRET}/gallery/${id}`, {
         method: "DELETE",
       });
 
@@ -254,7 +254,7 @@ export default function AdminGalleryPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <Link
-                href="/admin"
+                href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}`}
                 className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
               >
                 <ArrowLeft className="w-5 h-5" />

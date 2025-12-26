@@ -120,7 +120,7 @@ export default function AdminImagesPage() {
           {/* Header */}
           <div className="mb-8">
             <Link
-              href="/admin"
+              href={`/${process.env.NEXT_PUBLIC_ADMIN_SECRET}`}
               className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
             >
               <ArrowLeft className="w-5 h-5" />
