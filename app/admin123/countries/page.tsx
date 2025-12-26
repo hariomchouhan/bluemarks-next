@@ -38,7 +38,7 @@ export default function AdminCountriesPage() {
 
   const fetchCountries = async () => {
     try {
-      const res = await fetch("/api/admin/countries");
+      const res = await fetch("/api/admin123/countries");
       const data = await res.json();
       setCountries(data);
     } catch (error) {
@@ -51,8 +51,8 @@ export default function AdminCountriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingCountry
-      ? `/api/admin/countries/${editingCountry._id}`
-      : "/api/admin/countries";
+      ? `/api/admin123/countries/${editingCountry._id}`
+      : "/api/admin123/countries";
     const method = editingCountry ? "PUT" : "POST";
 
     const advantagesArray = formData.advantages.split("\n").filter((a) => a.trim());
@@ -95,7 +95,7 @@ export default function AdminCountriesPage() {
 
   const handleEdit = (country: Country) => {
     setEditingCountry(country);
-    fetch(`/api/admin/countries/${country._id}`)
+    fetch(`/api/admin123/countries/${country._id}`)
       .then((res) => res.json())
       .then((data) => {
         setFormData({
@@ -119,7 +119,7 @@ export default function AdminCountriesPage() {
     if (!confirm("Are you sure you want to delete this country?")) return;
 
     try {
-      const res = await fetch(`/api/admin/countries/${id}`, {
+      const res = await fetch(`/api/admin123/countries/${id}`, {
         method: "DELETE",
       });
 
@@ -157,7 +157,7 @@ export default function AdminCountriesPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <Link
-                href="/admin"
+                href="/admin123"
                 className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
               >
                 <ArrowLeft className="w-5 h-5" />

@@ -20,7 +20,6 @@ export default function Header() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About Us" },
-    { href: "/blog", label: "Blog" },
     { href: "/gallery", label: "Gallery" },
     { href: "/contact", label: "Contact" },
   ];
@@ -48,7 +47,7 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            
+
             {/* MBBS Dropdown */}
             <div
               className="relative"
@@ -116,12 +115,12 @@ export default function Header() {
               <Phone className="w-5 h-5" />
               <span className="font-medium">+91-8859-008-499</span>
             </a>
-            <Link
+            {/* <Link
               href="/contact"
               className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
             >
               Call Now
-            </Link>
+            </Link> */}
           </div>
 
           {/* Mobile Menu Button */}
@@ -147,7 +146,7 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
-              
+
               {/* Mobile MBBS Menu */}
               <div className="border-t pt-4 mt-2">
                 <div className="font-semibold text-gray-900 mb-2">MBBS</div>
@@ -188,13 +187,13 @@ export default function Header() {
                   <Phone className="w-5 h-5" />
                   <span>+91-8859-008-499</span>
                 </a>
-                <Link
+                {/* <Link
                   href="/contact"
                   className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold text-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Call Now
-                </Link>
+                </Link> */}
               </div>
             </nav>
           </div>

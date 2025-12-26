@@ -1,12 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export interface IGallery extends Document {
+export interface IImage extends Document {
   title: string;
-  type: "photo" | "video";
-  url: string;
-  thumbnail?: string;
-  category: string;
-  youtubeId?: string; // For YouTube videos
   imageData?: string; // Base64 encoded image data for photos
   imageMimeType?: string; // MIME type of the image (e.g., image/png, image/jpeg)
   fileName?: string; // Original filename
@@ -15,30 +10,11 @@ export interface IGallery extends Document {
   updatedAt: Date;
 }
 
-const GallerySchema: Schema = new Schema(
+const ImageSchema: Schema = new Schema(
   {
     title: {
       type: String,
       required: true,
-    },
-    type: {
-      type: String,
-      enum: ["photo", "video"],
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
-    thumbnail: {
-      type: String,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    youtubeId: {
-      type: String,
     },
     imageData: {
       type: String, // Base64 encoded image
@@ -58,8 +34,8 @@ const GallerySchema: Schema = new Schema(
   }
 );
 
-const Gallery: Model<IGallery> =
-  mongoose.models.Gallery || mongoose.model<IGallery>("Gallery", GallerySchema);
+const Image: Model<IImage> =
+  mongoose.models.Image || mongoose.model<IImage>("Image", ImageSchema);
 
-export default Gallery;
+export default Image;
 

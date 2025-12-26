@@ -12,6 +12,7 @@
     "@types/formidable": "^3.4.6",
     "bcryptjs": "^3.0.3",
     "formidable": "^3.5.4",
+    "jodit-react": "^5.2.38",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.344.0",
     "mongoose": "^9.0.1",
